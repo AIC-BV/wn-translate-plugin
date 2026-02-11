@@ -63,13 +63,13 @@ class TranslatableModel extends TranslatableBehavior
      * @param  string $locale
      * @return Builder
      */
-    public function scopeTransWhere($query, $index, $value, $locale = null, $operator = '=')
+    public function scopeTransWhere($query, $index, $value, $locale = null, $operator = '=', $fallbackToBase = false)
     {
         if (!$locale) {
             $locale = $this->translatableContext;
         }
 
-        // Separate query into two separate queries for improved performance
+        // separate query into two separate queries for improved performance
         // @see https://github.com/rainlab/translate-plugin/pull/623
         $translateIndexes = Db::table('winter_translate_indexes')
             ->where('winter_translate_indexes.model_type', '=', $this->getClass())
@@ -80,8 +80,11 @@ class TranslatableModel extends TranslatableBehavior
 
         if ($translateIndexes->count()) {
             $query->whereIn($this->model->getQualifiedKeyName(), $translateIndexes);
-        } else {
+        } elseif ($fallbackToBase) {
             $query->where($index, $operator, $value);
+        } else {
+            // ensure no results when strict matching is required
+            $query->whereRaw('1 = 0');
         }
 
         return $query;

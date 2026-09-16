@@ -142,7 +142,7 @@ class TranslatableModel extends TranslatableBehavior
             return $query;
         }
 
-        $query->leftJoin($joinTableWithAlias, function($join) use ($locale, $index, $indexTableAlias) {
+        $query->leftJoin($joinTableWithAlias, function ($join) use ($locale, $index, $indexTableAlias) {
             $join
                 ->on(Db::raw(DbDongle::cast($this->model->getQualifiedKeyName(), 'TEXT')), '=', $indexTableAlias . '.model_id')
                 ->where($indexTableAlias . '.model_type', '=', $this->getClass())
@@ -168,7 +168,7 @@ class TranslatableModel extends TranslatableBehavior
          * Model doesn't exist yet, defer this logic in memory
          */
         if (!$this->model->exists) {
-            $this->model->bindEventOnce('model.afterCreate', function() use ($locale) {
+            $this->model->bindEventOnce('model.afterCreate', function () use ($locale) {
                 $this->storeTranslatableData($locale);
             });
 

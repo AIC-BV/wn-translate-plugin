@@ -5,6 +5,7 @@ namespace Winter\Translate\Behaviors;
 use Db;
 use DbDongle;
 use Winter\Translate\Classes\TranslatableBehavior;
+use Winter\Translate\Classes\Translator;
 
 /**
  * Translatable model extension
@@ -17,6 +18,9 @@ use Winter\Translate\Classes\TranslatableBehavior;
  *
  *   public $translatable = ['name', 'content'];
  *
+ * Translations are eager-loaded whenever the active locale differs from the
+ * default one. Opt out per model with `public $translatableEagerLoad = false;`
+ * or per query with `->withoutGlobalScope('translatableEagerLoad')`.
  */
 class TranslatableModel extends TranslatableBehavior
 {
@@ -30,6 +34,15 @@ class TranslatableModel extends TranslatableBehavior
         ];
 
         $this->model->bindEvent('model.afterDelete', [$this, 'afterModelDelete']);
+
+        if (!$model->propertyExists('translatableEagerLoad') || $model->translatableEagerLoad) {
+            $model::addGlobalScope('translatableEagerLoad', function ($query) {
+                $translator = Translator::instance();
+                if ($translator->getLocale() !== $translator->getDefaultLocale()) {
+                    $query->with('translations');
+                }
+            });
+        }
     }
 
     public function afterModelDelete()

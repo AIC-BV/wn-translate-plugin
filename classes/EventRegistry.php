@@ -211,8 +211,8 @@ class EventRegistry
     {
         try {
             (new ThemeScanner)->scanThemeConfigForMessages();
+        } catch (Exception $ex) {
         }
-        catch (Exception $ex) {}
     }
 
     //
@@ -267,11 +267,11 @@ class EventRegistry
     {
         $locales = LocaleModel::listAvailable();
 
-        $extensions = array_map(function($ext) {
+        $extensions = array_map(function ($ext) {
             return '.'.$ext;
         }, array_keys($locales));
 
-        return $templates->filter(function($template) use ($extensions) {
+        return $templates->filter(function ($template) use ($extensions) {
             return !Str::endsWith($template->getBaseFileName(), $extensions);
         });
     }

@@ -16,7 +16,7 @@ class EventRegistryTest extends \Winter\Translate\Tests\TranslatePluginTestCase
             $model->translatable = array_merge($model->translatable, ['testField', 'tabTestField', 'secondaryTabTestField']);
         });
 
-        Event::listen('backend.form.extendFieldsBefore', function($widget) {
+        Event::listen('backend.form.extendFieldsBefore', function ($widget) {
             $widget->tabs['fields']['tabTestField'] = [
                 'label'   => 'Tab Test Field',
                 'type'    => 'text',

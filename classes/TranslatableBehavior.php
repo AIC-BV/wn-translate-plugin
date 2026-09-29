@@ -144,7 +144,14 @@ abstract class TranslatableBehavior extends ExtensionBase
             return false;
         }
 
-        return in_array($key, $this->model->getTranslatableAttributes());
+        // This runs on every attribute read. Going through the model resolves the method
+        // via __call() into the extension, which is ~100x slower than a direct call, so
+        // only do that when the model defines the method itself.
+        $attributes = method_exists($this->model, 'getTranslatableAttributes')
+            ? $this->model->getTranslatableAttributes()
+            : $this->getTranslatableAttributes();
+
+        return in_array($key, $attributes);
     }
 
     /**

@@ -145,6 +145,7 @@ abstract class TranslatableBehavior extends ExtensionBase
 
     /**
      * Checks if an attribute should be translated or not.
+     * The result of getTranslatableAttributes() is cached until the model's $translatable property changes.
      * @param  string  $key
      * @return boolean
      */
@@ -159,8 +160,8 @@ abstract class TranslatableBehavior extends ExtensionBase
         $translatable = $this->model->translatable;
 
         if ($this->translatableAttributeNamesSource !== $translatable) {
-            $this->translatableAttributeNamesSource = $translatable;
             $this->translatableAttributeNames = $this->model->getTranslatableAttributes();
+            $this->translatableAttributeNamesSource = $translatable;
         }
 
         return in_array($key, $this->translatableAttributeNames);
